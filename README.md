@@ -1,3 +1,5 @@
+![diagram](./img/network_diagram.jpg)
+
 # LeLi
 
 이 Github에 있는 자료들은 한국기술건설연구원(KICT), 무브먼츠와의 협약을 통해 부산시 스마트건설 시범사업에 참여한 레퍼런스를 기반으로 
