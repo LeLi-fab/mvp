@@ -1,0 +1,115 @@
+version: '2'
+
+networks:
+  blockchain_network:
+
+services:
+  couchdb0:
+    container_name: couchdb0
+    image: hyperledger/fabric-couchdb:0.4.14
+    environment:
+      - COUCHDB_USER=couchdb0
+      - COUCHDB_PASSWORD=peer0couchdb
+    ports:
+      - "5984:5984"
+    networks:
+      - blockchain_network
+
+  couchdb1:
+    container_name: couchdb1
+    image: hyperledger/fabric-couchdb:0.4.14
+    environment:
+      - COUCHDB_USER=couchdb1
+      - COUCHDB_PASSWORD=peer1couchdb
+    ports:
+      - "6984:5984"
+    networks:
+      - blockchain_network
+
+  couchdb2:
+    container_name: couchdb2
+    image: hyperledger/fabric-couchdb:0.4.14
+    environment:
+      - COUCHDB_USER=couchdb2
+      - COUCHDB_PASSWORD=peer2couchdb
+    ports:
+      - "7984:5984"
+    networks:
+      - blockchain_network
+
+  couchdb3:
+    container_name: couchdb3
+    image: hyperledger/fabric-couchdb:0.4.14
+    environment:
+      - COUCHDB_USER=couchdb3
+      - COUCHDB_PASSWORD=peer3couchdb
+    ports:
+      - "8984:5984"
+    networks:
+      - blockchain_network
+  
+  couchdb4:
+    container_name: couchdb4
+    image: hyperledger/fabric-couchdb:0.4.14
+    environment:
+      - COUCHDB_USER=couchdb4
+      - COUCHDB_PASSWORD=peer4couchdb
+    ports:
+      - "9984:5984"
+    networks:
+      - blockchain_network
+
+  couchdb5:
+    container_name: couchdb5
+    image: hyperledger/fabric-couchdb:0.4.14
+    environment:
+      - COUCHDB_USER=couchdb5
+      - COUCHDB_PASSWORD=peer5couchdb
+    ports:
+      - "10984:5984"
+    networks:
+      - blockchain_network
+
+  couchdb6:
+    container_name: couchdb6
+    image: hyperledger/fabric-couchdb:0.4.14
+    environment:
+      - COUCHDB_USER=couchdb6
+      - COUCHDB_PASSWORD=peer6couchdb
+    ports:
+      - "11984:5984"
+    networks:
+      - blockchain_network
+
+  couchdb7:
+    container_name: couchdb7
+    image: hyperledger/fabric-couchdb:0.4.14
+    environment:
+      - COUCHDB_USER=couchdb7
+      - COUCHDB_PASSWORD=peer7couchdb
+    ports:
+      - "12984:5984"
+    networks:
+      - blockchain_network
+
+  couchdb8:
+    container_name: couchdb8
+    image: hyperledger/fabric-couchdb:0.4.14
+    environment:
+      - COUCHDB_USER=couchdb8
+      - COUCHDB_PASSWORD=peer8couchdb
+    ports:
+      - "13984:5984"
+    networks:
+      - blockchain_network
+
+  couchdb9:
+    container_name: couchdb9
+    image: hyperledger/fabric-couchdb:0.4.14
+    environment:
+      - COUCHDB_USER=couchdb9
+      - COUCHDB_PASSWORD=peer9couchdb
+    ports:
+      - "14984:5984"
+    networks:
+      - blockchain_network

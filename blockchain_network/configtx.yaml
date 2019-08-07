@@ -1,0 +1,239 @@
+Organizations:
+  - &OrdererOrg
+      Name: OrdererOrg
+      ID: OrdererMSP
+
+      MSPDir: crypto-config/ordererOrganizations/orderersorg/msp
+      Policies:
+          Readers:
+              Type: Signature
+              Rule: "OR('OrdererMSP.member')"
+          Writers:
+              Type: Signature
+              Rule: "OR('OrdererMSP.member')"
+          Admins:
+              Type: Signature
+              Rule: "OR('OrdererMSP.admin')"
+
+  - &OrderOrg
+      Name: OrderOrgMSP
+      ID: OrderOrgMSP
+      
+      MSPDir: crypto-config/peerOrganizations/orderorg/msp/
+
+      Policies:
+          Readers:
+              Type: Signature
+              Rule: "OR('OrderOrgMSP.admin', 'OrderOrgMSP.peer', 'OrderOrgMSP.client')"
+          Writers:
+              Type: Signature
+              Rule: "OR('OrderOrgMSP.admin', 'OrderOrgMSP.client')"
+          Admins:
+              Type: Signature
+              Rule: "OR('OrderOrgMSP.admin')"
+
+      AnchorPeers:
+          - Host: peer0.orderorg
+            Port: 7051
+
+  - &ContractorOrg
+      Name: ContractorOrgMSP
+      ID: ContractorOrgMSP
+      
+      MSPDir: crypto-config/peerOrganizations/contractororg/msp/
+
+      Policies:
+          Readers:
+              Type: Signature
+              Rule: "OR('ContractorOrgMSP.admin', 'ContractorOrgMSP.peer', 'ContractorOrgMSP.client')"
+          Writers:
+              Type: Signature
+              Rule: "OR('ContractorOrgMSP.admin', 'ContractorOrgMSP.client')"
+          Admins:
+              Type: Signature
+              Rule: "OR('ContractorOrgMSP.admin')"
+
+      AnchorPeers:
+          - Host: peer2.contractororg
+            Port: 9051
+
+  - &SubContractorOrg
+      Name: SubContractorOrgMSP
+      ID: SubContractorOrgMSP
+      
+      MSPDir: crypto-config/peerOrganizations/subcontractororg/msp/
+
+      Policies:
+          Readers:
+              Type: Signature
+              Rule: "OR('SubContractorOrgMSP.admin', 'SubContractorOrgMSP.peer', 'SubContractorOrgMSP.client')"
+          Writers:
+              Type: Signature
+              Rule: "OR('SubContractorOrgMSP.admin', 'SubContractorOrgMSP.client')"
+          Admins:
+              Type: Signature
+              Rule: "OR('SubContractorOrgMSP.admin')"
+
+      AnchorPeers:
+          - Host: peer4.subcontractororg
+            Port: 11051
+
+  - &DataProviderOrg
+      Name: DataProviderOrg
+      ID: DataProviderOrg
+      
+      MSPDir: crypto-config/peerOrganizations/dataproviderorg/msp/
+
+      Policies:
+          Readers:
+              Type: Signature
+              Rule: "OR('DataProviderOrg.admin', 'DataProviderOrg.peer', 'DataProviderOrg.client')"
+          Writers:
+              Type: Signature
+              Rule: "OR('DataProviderOrg.admin', 'DataProviderOrg.client')"
+          Admins:
+              Type: Signature
+              Rule: "OR('DataProviderOrg.admin')"
+
+      AnchorPeers:
+          - Host: peer6.dataproviderorg
+            Port: 13051
+
+  - &GovernanceOrg
+      Name: GovernanceOrg
+      ID: GovernanceOrg
+      
+      MSPDir: crypto-config/peerOrganizations/governanceorg/msp/
+
+      Policies:
+          Readers:
+              Type: Signature
+              Rule: "OR('GovernanceOrg.admin', 'GovernanceOrg.peer', 'GovernanceOrg.client')"
+          Writers:
+              Type: Signature
+              Rule: "OR('GovernanceOrg.admin', 'GovernanceOrg.client')"
+          Admins:
+              Type: Signature
+              Rule: "OR('GovernanceOrg.admin')"
+
+      AnchorPeers:
+          - Host: peer7.governanceorg
+            Port: 14051
+      
+Capabilities:
+    Channel: &ChannelCapabilities
+        V1_3: true
+    Orderer: &OrdererCapabilities
+        V1_1: true
+    
+    Application: &ApplicationCapabilities
+        V1_3: true
+        V1_2: false
+        V1_1: false
+
+Application: &ApplicationDefaults
+
+
+    Organizations:
+
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+
+    Capabilities:
+        <<: *ApplicationCapabilities
+
+
+Orderer: &OrdererDefaults
+
+    OrdererType: kafka
+
+    Addresses:
+        - orderer0.orderersorg:7050
+        - orderer1.orderersorg:7050
+        - orderer2.orderersorg:7050
+
+    BatchTimeout: 0.5s
+    BatchSize:
+        MaxMessageCount: 10
+        AbsoluteMaxBytes: 99 MB
+        PreferredMaxBytes: 512 KB
+
+    Kafka:
+        Brokers:
+            - kafka0.orderersorg:9092
+            - kafka1.orderersorg:9092
+            - kafka2.orderersorg:9092
+            - kafka3.orderersorg:9092
+
+    Organizations:
+
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+        BlockValidation:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+
+
+Channel: &ChannelDefaults
+    Policies:
+        Readers:
+            Type: ImplicitMeta
+            Rule: "ANY Readers"
+        Writers:
+            Type: ImplicitMeta
+            Rule: "ANY Writers"
+        Admins:
+            Type: ImplicitMeta
+            Rule: "MAJORITY Admins"
+
+    Capabilities:
+        <<: *ChannelCapabilities
+
+Profiles:
+
+
+    OneOrgThreeOrderersGenesis:
+        <<: *ChannelDefaults
+        Orderer:
+            <<: *OrdererDefaults
+            Organizations:
+                - *OrdererOrg
+            Capabilities:
+                <<: *OrdererCapabilities
+        Consortiums:
+            SampleConsortium:
+                Organizations:
+                    - *OrderOrg
+                    - *ContractorOrg
+                    - *SubContractorOrg
+                    - *DataProviderOrg
+                    - *GovernanceOrg
+
+    FiveOrgsChannel:
+        Consortium: SampleConsortium
+        Application:
+            <<: *ApplicationDefaults
+            Organizations:
+                - *OrderOrg
+                - *ContractorOrg
+                - *SubContractorOrg
+                - *DataProviderOrg
+                - *GovernanceOrg
+            Capabilities:
+                <<: *ApplicationCapabilities

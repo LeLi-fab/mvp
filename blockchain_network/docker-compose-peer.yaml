@@ -1,0 +1,344 @@
+#
+# Copyright IBM Corp All Rights Reserved
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+version: '2'
+
+networks:
+  blockchain_network:
+
+services:
+  
+  peer-base:
+    image: hyperledger/fabric-peer
+    environment:
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=info
+      - CORE_CHAINCODE_LOGGING_LEVEL=debug
+      - CORE_VM_DOCKER_HOSTCONFIG_NETWORKMODE=bn_blockchain_network
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_GOSSIP_USELEADERELECTION=true
+      - CORE_PEER_GOSSIP_ORGLEADER=false
+      - CORE_PEER_PROFILE_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/etc/hyperledger/fabric/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/etc/hyperledger/fabric/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/etc/hyperledger/fabric/tls/ca.crt
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: peer node start
+    volumes:
+        - /var/run/:/host/var/run/
+        - ./config:/etc/hyperledger/configtx
+    networks:
+      - blockchain_network
+
+
+  peer0.orderorg:
+    extends:
+      service: peer-base
+    container_name: peer0.orderorg
+    environment:
+      - CORE_PEER_ID=peer0.orderorg
+      - CORE_PEER_LOCALMSPID=OrderOrgMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@orderorg/msp
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.orderorg
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer0.orderorg:7051
+      - CORE_PEER_ADDRESS=peer0.orderorg:7051
+      # for operation
+      - CORE_OPERATIONS_LISTENADDRESS=peer0.orderorg:9443
+      - CORE_METRICS_PROVIDER=prometheus
+    ports:
+      - 7051:7051
+      - 7052:7052
+      - 7053:7053
+      - 9100:9443
+    volumes:
+        - ./crypto-config/peerOrganizations/orderorg/peers/peer0.orderorg/msp:/etc/hyperledger/msp/peer
+        - ./crypto-config/peerOrganizations/orderorg/peers/peer0.orderorg/tls:/etc/hyperledger/fabric/tls
+        - ./crypto-config/peerOrganizations/orderorg/users:/etc/hyperledger/msp/users
+    networks:
+      - blockchain_network
+      
+
+  peer1.orderorg:
+    extends:
+      service: peer-base
+    container_name: peer1.orderorg
+    environment:
+      - CORE_PEER_ID=peer1.orderorg
+      - CORE_PEER_LOCALMSPID=OrderOrgMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@orderorg/msp
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer1.orderorg
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer1.orderorg:7051
+      - CORE_PEER_ADDRESS=peer1.orderorg:7051
+      # for operation
+      - CORE_OPERATIONS_LISTENADDRESS=peer1.orderorg:9443
+      - CORE_METRICS_PROVIDER=prometheus
+    ports:
+      - 8051:7051
+      - 8052:7052
+      - 8053:7053
+      - 9200:9443
+    volumes:
+        - ./crypto-config/peerOrganizations/orderorg/peers/peer1.orderorg/msp:/etc/hyperledger/msp/peer
+        - ./crypto-config/peerOrganizations/orderorg/peers/peer1.orderorg/tls:/etc/hyperledger/fabric/tls
+        - ./crypto-config/peerOrganizations/orderorg/users:/etc/hyperledger/msp/users
+    networks:
+      - blockchain_network
+
+
+  peer2.contractororg:
+    extends:
+      service: peer-base
+    container_name: peer2.contractororg
+    environment:
+      - CORE_PEER_ID=peer2.contractororg
+      - CORE_PEER_LOCALMSPID=ContractorOrgMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@contractororg/msp
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer3.contractororg
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer2.contractororg:7051
+      - CORE_PEER_ADDRESS=peer2.contractororg:7051
+      # for operation
+      - CORE_OPERATIONS_LISTENADDRESS=peer2.contractororg:9443
+      - CORE_METRICS_PROVIDER=prometheus
+    ports:
+      - 9051:7051
+      - 9052:7052
+      - 9053:7053
+      - 9300:9443
+    volumes:
+        - ./crypto-config/peerOrganizations/contractororg/peers/peer2.contractororg/msp:/etc/hyperledger/msp/peer
+        - ./crypto-config/peerOrganizations/contractororg/peers/peer2.contractororg/tls:/etc/hyperledger/fabric/tls
+        - ./crypto-config/peerOrganizations/contractororg/users:/etc/hyperledger/msp/users
+    networks:
+      - blockchain_network
+
+
+  peer3.contractororg:
+    extends:
+      service: peer-base
+    container_name: peer3.contractororg
+    environment:
+      - CORE_PEER_ID=peer3.contractororg
+      - CORE_PEER_LOCALMSPID=ContractorOrgMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@contractororg/msp
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer3.contractororg
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer3.contractororg:7051
+      - CORE_PEER_ADDRESS=peer3.contractororg:7051
+      # for operation
+      - CORE_OPERATIONS_LISTENADDRESS=peer3.contractororg:9443
+      - CORE_METRICS_PROVIDER=prometheus
+    ports:
+      - 10051:7051
+      - 10052:7052
+      - 10053:7053
+      - 9400:9443
+    volumes:
+        - ./crypto-config/peerOrganizations/contractororg/peers/peer3.contractororg/msp:/etc/hyperledger/msp/peer
+        - ./crypto-config/peerOrganizations/contractororg/peers/peer3.contractororg/tls:/etc/hyperledger/fabric/tls
+        - ./crypto-config/peerOrganizations/contractororg/users:/etc/hyperledger/msp/users
+    networks:
+      - blockchain_network
+  
+
+  peer4.subcontractororg:
+    extends:
+      service: peer-base
+    container_name: peer4.subcontractororg
+    environment:
+      - CORE_PEER_ID=peer4.subcontractororg
+      - CORE_PEER_LOCALMSPID=SubContractorOrgMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@subcontractororg/msp
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer5.subcontractororg
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer4.subcontractororg:7051
+      - CORE_PEER_ADDRESS=peer4.subcontractororg:7051
+      # for operation
+      - CORE_OPERATIONS_LISTENADDRESS=peer4.subcontractororg:9443
+      - CORE_METRICS_PROVIDER=prometheus
+    ports:
+      - 11051:7051
+      - 11052:7052
+      - 11053:7053
+      - 9500:9443
+    volumes:
+        - ./crypto-config/peerOrganizations/subcontractororg/peers/peer4.subcontractororg/msp:/etc/hyperledger/msp/peer
+        - ./crypto-config/peerOrganizations/subcontractororg/peers/peer4.subcontractororg/tls:/etc/hyperledger/fabric/tls
+        - ./crypto-config/peerOrganizations/subcontractororg/users:/etc/hyperledger/msp/users
+    networks:
+      - blockchain_network
+
+
+  peer5.subcontractororg:
+    extends:
+      service: peer-base
+    container_name: peer5.subcontractororg
+    environment:
+      - CORE_PEER_ID=peer5.subcontractororg
+      - CORE_PEER_LOCALMSPID=SubContractorOrgMSP
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@subcontractororg/msp
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer5.subcontractororg
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer5.subcontractor:7051
+      - CORE_PEER_ADDRESS=peer5.subcontractororg:7051
+      # for operation
+      - CORE_OPERATIONS_LISTENADDRESS=peer5.subcontractororg:9443
+      - CORE_METRICS_PROVIDER=prometheus
+    ports:
+      - 12051:7051
+      - 12052:7052
+      - 12053:7053
+      - 9600:9443
+    volumes:
+        - ./crypto-config/peerOrganizations/subcontractororg/peers/peer5.subcontractororg/msp:/etc/hyperledger/msp/peer
+        - ./crypto-config/peerOrganizations/subcontractororg/peers/peer5.subcontractororg/tls:/etc/hyperledger/fabric/tls
+        - ./crypto-config/peerOrganizations/subcontractororg/users:/etc/hyperledger/msp/users
+    networks:
+      - blockchain_network
+
+
+  peer6.dataproviderorg:
+    extends:
+      service: peer-base
+    container_name: peer6.dataproviderorg
+    environment:
+      - CORE_PEER_ID=peer6.dataproviderorg
+      - CORE_PEER_LOCALMSPID=DataProviderOrg
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@dataproviderorg/msp
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer6.dataproviderorg
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer6.dataproviderorg:7051
+      - CORE_PEER_ADDRESS=peer6.dataproviderorg:7051
+      # for operation
+      - CORE_OPERATIONS_LISTENADDRESS=peer6.dataproviderorg:9443
+      - CORE_METRICS_PROVIDER=prometheus
+    ports:
+      - 13051:7051
+      - 13052:7052
+      - 13053:7053
+      - 9700:9443
+    volumes:
+        - ./crypto-config/peerOrganizations/dataproviderorg/peers/peer6.dataproviderorg/msp:/etc/hyperledger/msp/peer
+        - ./crypto-config/peerOrganizations/dataproviderorg/peers/peer6.dataproviderorg/tls:/etc/hyperledger/fabric/tls
+        - ./crypto-config/peerOrganizations/dataproviderorg/users:/etc/hyperledger/msp/users
+    networks:
+      - blockchain_network
+
+  peer7.governanceorg:
+    extends:
+      service: peer-base
+    container_name: peer7.governanceorg
+    environment:
+      - CORE_PEER_ID=peer7.governanceorg
+      - CORE_PEER_LOCALMSPID=GovernanceOrg
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@governanceorg/msp
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer8.gorvernanceorg
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer7.governanceorg:7051
+      - CORE_PEER_ADDRESS=peer7.governanceorg:7051
+      # for operation
+      - CORE_OPERATIONS_LISTENADDRESS=peer7.governanceorg:9443
+      - CORE_METRICS_PROVIDER=prometheus
+    ports:
+      - 14051:7051
+      - 14052:7052
+      - 14053:7053
+      - 9800:9443
+    volumes:
+        - ./crypto-config/peerOrganizations/governanceorg/peers/peer7.governanceorg/msp:/etc/hyperledger/msp/peer
+        - ./crypto-config/peerOrganizations/governanceorg/peers/peer7.governanceorg/tls:/etc/hyperledger/fabric/tls
+        - ./crypto-config/peerOrganizations/governanceorg/users:/etc/hyperledger/msp/users
+    networks:
+      - blockchain_network
+
+  peer8.governanceorg:
+    extends:
+      service: peer-base
+    container_name: peer8.governanceorg
+    environment:
+      - CORE_PEER_ID=peer8.governanceorg
+      - CORE_PEER_LOCALMSPID=GovernanceOrg
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@governanceorg/msp
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer8.gorvernanceorg
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer8.governanceorg:7051
+      - CORE_PEER_ADDRESS=peer8.governanceorg:7051
+      # for operation
+      - CORE_OPERATIONS_LISTENADDRESS=peer8.governanceorg:9443
+      - CORE_METRICS_PROVIDER=prometheus
+    ports:
+      - 15051:7051
+      - 15052:7052
+      - 15053:7053
+      - 9900:9443
+    volumes:
+        - ./crypto-config/peerOrganizations/governanceorg/peers/peer8.governanceorg/msp:/etc/hyperledger/msp/peer
+        - ./crypto-config/peerOrganizations/governanceorg/peers/peer8.governanceorg/tls:/etc/hyperledger/fabric/tls
+        - ./crypto-config/peerOrganizations/governanceorg/users:/etc/hyperledger/msp/users
+    networks:
+      - blockchain_network
+
+
+  peer9.governanceorg:
+    extends:
+      service: peer-base
+    container_name: peer9.governanceorg
+    environment:
+      - CORE_PEER_ID=peer9.governanceorg
+      - CORE_PEER_LOCALMSPID=GovernanceOrg
+      - CORE_PEER_MSPCONFIGPATH=/etc/hyperledger/msp/users/Admin@governanceorg/msp
+      - CORE_PEER_GOSSIP_BOOTSTRAP=peer8.gorvernanceorg
+      - CORE_PEER_GOSSIP_EXTERNALENDPOINT=peer9.governance:7051
+      - CORE_PEER_ADDRESS=peer9.governanceorg:7051
+      # for operation
+      - CORE_OPERATIONS_LISTENADDRESS=peer9.governanceorg:9443
+      - CORE_METRICS_PROVIDER=prometheus
+    ports:
+      - 16051:7051
+      - 16052:7052
+      - 16053:7053
+      - 10000:9443
+    volumes:
+        - ./crypto-config/peerOrganizations/governanceorg/peers/peer9.governanceorg/msp:/etc/hyperledger/msp/peer
+        - ./crypto-config/peerOrganizations/governanceorg/peers/peer9.governanceorg/tls:/etc/hyperledger/fabric/tls
+        - ./crypto-config/peerOrganizations/governanceorg/users:/etc/hyperledger/msp/users
+    networks:
+      - blockchain_network
+
+  # couchdb:
+  #   container_name: couchdb
+  #   image: hyperledger/fabric-couchdb
+  #   # Populate the COUCHDB_USER and COUCHDB_PASSWORD to set an admin user and password
+  #   # for CouchDB.  This will prevent CouchDB from operating in an "Admin Party" mode.
+  #   environment:
+  #     - COUCHDB_USER=
+  #     - COUCHDB_PASSWORD=
+  #   ports:
+  #     - 5984:5984
+  #   networks:
+  #     - blockchain_network
+
+  cli:
+    container_name: cli
+    image: hyperledger/fabric-tools
+    tty: true
+    environment:
+      - GOPATH=/opt/gopath
+      - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
+      - FABRIC_LOGGING_SPEC=info
+      - CORE_PEER_ID=cli
+      - CORE_PEER_ADDRESS=peer0.orderorg:7051
+      - CORE_PEER_LOCALMSPID=OrderOrgMSP
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/orderorg/users/Admin@orderorg/msp
+      - CORE_CHAINCODE_KEEPALIVE=10
+      # Enable TLS
+      - CORE_PEER_TLS_ENABLED=true
+      - CORE_PEER_TLS_CERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/orderorg/peers/peer0.orderorg/tls/server.crt
+      - CORE_PEER_TLS_KEY_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/orderorg/peers/peer0.orderorg/tls/server.key
+      - CORE_PEER_TLS_ROOTCERT_FILE=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/orderorg/peers/peer0.orderorg/tls/ca.crt
+    working_dir: /etc/hyperledger/configtx
+    command: /bin/bash
+    volumes:
+        - ./channel-artifacts:/etc/hyperledger/configtx
+        - /var/run/:/host/var/run/
+        - ./../config/:/etc/hyperledger/configtx
+        - ./crypto-config:/etc/hyperledger/crypto-config
+        - ./crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+        - ./channel-artifacts:/opt/gopath/src/github.com/hyperledger/fabric/peer/channel-artifacts
+    networks:
+        - blockchain_network

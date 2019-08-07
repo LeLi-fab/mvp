@@ -1,0 +1,102 @@
+version: '2'
+
+networks:
+  blockchain_network:
+
+services:
+
+  orderer0.orderersorg:
+    container_name: orderer0.orderersorg
+    image: hyperledger/fabric-orderer:1.4.0
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_KAFKA_RETRY_SHORTINTERVAL=1s
+      - ORDERER_KAFKA_RETRY_SHORTTOTAL=30s
+      - ORDERER_KAFKA_VERBOSE=true
+      # for operation
+      - ORDERER_OPERATIONS_LISTENADDRESS=orderer0.orderersorg:9443
+      - ORDERER_METRICS_PROVIDER=prometheus
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: orderer
+    volumes:
+    - ./genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+    - ./crypto-config/ordererOrganizations/orderersorg/orderers/orderer0.orderersorg/msp:/var/hyperledger/orderer/msp
+    - ./crypto-config/ordererOrganizations/orderersorg/orderers/orderer0.orderersorg/tls/:/var/hyperledger/orderer/tls
+    ports:
+      - 7050:7050
+      - 9443:9443
+    networks:
+      - blockchain_network
+
+  orderer1.orderersorg:
+    container_name: orderer1.orderersorg
+    image: hyperledger/fabric-orderer:1.4.0
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_KAFKA_RETRY_SHORTINTERVAL=1s
+      - ORDERER_KAFKA_RETRY_SHORTTOTAL=30s
+      - ORDERER_KAFKA_VERBOSE=true
+      # for operation
+      - ORDERER_OPERATIONS_LISTENADDRESS=orderer1.orderersorg:9443
+      - ORDERER_METRICS_PROVIDER=prometheus
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: orderer
+    volumes:
+    - ./genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+    - ./crypto-config/ordererOrganizations/orderersorg/orderers/orderer1.orderersorg/msp:/var/hyperledger/orderer/msp
+    - ./crypto-config/ordererOrganizations/orderersorg/orderers/orderer1.orderersorg/tls/:/var/hyperledger/orderer/tls
+    ports:
+      - 8050:7050
+      - 10443:9443
+    networks:
+      - blockchain_network
+
+  orderer2.orderersorg:
+    container_name: orderer2.orderersorg
+    image: hyperledger/fabric-orderer:1.4.0
+    environment:
+      - ORDERER_GENERAL_LOGLEVEL=debug
+      - ORDERER_GENERAL_LISTENADDRESS=0.0.0.0
+      - ORDERER_GENERAL_GENESISMETHOD=file
+      - ORDERER_GENERAL_GENESISFILE=/var/hyperledger/orderer/orderer.genesis.block
+      - ORDERER_GENERAL_LOCALMSPID=OrdererMSP
+      - ORDERER_GENERAL_LOCALMSPDIR=/var/hyperledger/orderer/msp
+      - ORDERER_GENERAL_TLS_ENABLED=true
+      - ORDERER_GENERAL_TLS_PRIVATEKEY=/var/hyperledger/orderer/tls/server.key
+      - ORDERER_GENERAL_TLS_CERTIFICATE=/var/hyperledger/orderer/tls/server.crt
+      - ORDERER_GENERAL_TLS_ROOTCAS=[/var/hyperledger/orderer/tls/ca.crt]
+      - ORDERER_KAFKA_RETRY_SHORTINTERVAL=1s
+      - ORDERER_KAFKA_RETRY_SHORTTOTAL=30s
+      - ORDERER_KAFKA_VERBOSE=true
+      # for operation
+      - ORDERER_OPERATIONS_LISTENADDRESS=orderer2.orderersorg:9443
+      - ORDERER_METRICS_PROVIDER=prometheus
+    working_dir: /opt/gopath/src/github.com/hyperledger/fabric
+    command: orderer
+    volumes:
+    - ./genesis.block:/var/hyperledger/orderer/orderer.genesis.block
+    - ./crypto-config/ordererOrganizations/orderersorg/orderers/orderer2.orderersorg/msp:/var/hyperledger/orderer/msp
+    - ./crypto-config/ordererOrganizations/orderersorg/orderers/orderer2.orderersorg/tls/:/var/hyperledger/orderer/tls
+    ports:
+      - 9050:7050
+      - 11443:9443
+    networks:
+      - blockchain_network
