@@ -1,8 +1,8 @@
-#네트워크의 핵심을 정의하는 디렉토리.
+# 네트워크의 핵심을 정의하는 디렉토리.
 
 configtx.yaml, core.yaml, orderer.yaml,  3개의 파일로 구성.
 
-##configtx.yaml
+## configtx.yaml
 
 채널에 대한 정책과 조직 정보 및 앵커피어를 정의하고
 ordering 서비스의 타입과 블록 생성 시간 및 블록의 최대 크기 등을 정의하는 파일.
@@ -20,7 +20,7 @@ ordering 서비스의 타입과 블록 생성 시간 및 블록의 최대 크기
 
 **Profile** - 위의 섹션들을 참조하여 genesis block과, 채널 관련 트랜잭션을 생성하기 위한 설정을 진행.
 
-##core.yaml
+## core.yaml
 
 네트워크의 핵심을 담당하는 파일.
 크게 6개의 섹션으로 나뉘어져 있고
@@ -39,7 +39,7 @@ ordering 서비스의 타입과 블록 생성 시간 및 블록의 최대 크기
 **Metrics** - 실시간 모니터링 수행을 위한 설정을 진행(Prometheus, Grafana와 연동하기 위한 초기 작업).
 
 
-##orderer.yaml
+## orderer.yaml
 
 
 orderer.yaml 파일은 크게 8개의 섹션으로 구성 되어있고
